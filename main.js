@@ -1,8 +1,9 @@
-window.requestAnimationFrame = window.webkitRequestAnimationFrame ||
+window.requestAnimationFrame = window.requestAnimationFrame||
+                               window.webkitRequestAnimationFrame ||
                                window.webkitRequestAnimationFrame ||
                                window.mozRequestAnimationFrame ||
                                window.oRequestAnimationFrame ||
-                               window.msRequestAnimationFrame;
+                               window.msRequestAnimationFrame
 
 var Game = function(canvasId) {
   var me = this;
@@ -82,4 +83,10 @@ var Game = function(canvasId) {
 }
 
 var game = new Game('game');
+
+var grid = new Grid(50, 50, 10, 10, 20, 20);
+
+grid.cells[6].isAlive = true;
+game.actors.push(grid);
+
 game.start();
