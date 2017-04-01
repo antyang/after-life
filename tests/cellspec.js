@@ -6,7 +6,7 @@ describe("A cell", function() {
   // before each test
   beforeEach(function() {
     cell = new Cell();
-    cell.neighbors = cell.neighbors.map(function() {
+    cell.neighbors = cell.getNeighbors().map(function() {
       return new Cell();
     })
   });

@@ -8,28 +8,72 @@ var Grid = function(x, y, rows, cols, width, height) {
   me.width = width;
   me.height = height;
 
-  me.background = 'white';
+  me.currentTime = 0;
+  me.speed = 100;
+
+  me.simulationOn = false;
+  // console.log('in global grid:', me.simulationOn)
+
+  me.background = 'black';
   me.forground = 'black';
 
   me.cellColor = 'green';
 
-  // me.cells = new Array(rows * cols);
-  me.cells = Array.apply(null, Array(rows * cols));
+  var init = function() {
+    // me.cells = new Array(rows * cols);
+    me.cells = Array.apply(null, Array(rows * cols));
 
-  me.cells = me.cells.map(function(c, i) {
-    // seed cell with x and y coor.
-    var x = i % cols;
-    var y = Math.floor(i/cols);
-    return new Cell();
-  });
+    me.cells = me.cells.map(function(c, i) {
+      // seed cell with x and y coor.
+      var x = i % cols;
+      var y = Math.floor(i/cols);
+      return new Cell(x, y, me);
+    });
+  }
 
   me.getCell = function(x, y) {
-    // TODO: torus grid ??
+    // torus grid
+    x = (cols + x) % cols;
+    y = (rows + y) % rows;
+
     return me.cells[x+y*cols];
   }
 
   me.update = function(engine, delta) {
-    // TODO: update game
+    // console.log('me.update', me.simulationOn)
+    if(!me.simulationOn) return;
+
+    // if currentTime elapsed over threshold
+    me.currentTime += delta;
+    if(me.currentTime < me.speed) return;
+
+    // find cells that need to die
+    var cellsToDie = me.cells.filter(function(c) {
+      return c.shouldDie();
+    })
+    // .forEach(function(c) {
+    //   c.isAlive = false;
+    // });
+
+    // find cells that should be born
+    var cellsToBeBorn = me.cells.filter(function(c) {
+      return c.shouldBeBorn();
+    })
+    // .forEach(function(c) {
+    //   c.isAlive = true;
+    // });
+
+
+    cellsToDie.forEach(function(c) {
+      c.isAlive = false;
+    });
+
+    cellsToBeBorn.forEach(function(c) {
+      c.isAlive = true;
+    });
+
+    me.currentTime = 0;
+
   }
 
   me.draw = function(ctx, delta) {
@@ -53,7 +97,7 @@ var Grid = function(x, y, rows, cols, width, height) {
     }
 
     var currY = 0;
-    for(var j = 0; j < cols; j++) {
+    for(var j = 0; j < rows; j++) {
       ctx.beginPath();
       ctx.moveTo(0, currY);
       ctx.lineTo(cols*width, currY);
@@ -70,9 +114,10 @@ var Grid = function(x, y, rows, cols, width, height) {
       ctx.fillRect(c.x*width, c.y*height, width, height);
     });
 
-
     ctx.restore();
   }
+
+  init();
 
   return me;
 }

@@ -13,8 +13,8 @@ var Game = function(canvasId) {
   // to draw to context we need getContext
   var ctx = canvas.getContext('2d');
 
+  me.canvas = canvas;
   me.background = 'black';
-
   me.running = false;
   me.isDebug = true;
 
@@ -43,8 +43,7 @@ var Game = function(canvasId) {
 
     ctx.fillStyle = 'lime';
     ctx.font = '20pt Consolas'
-    ctx.fillText(fps.toFixed(1), 20, 20); // ?
-
+    ctx.fillText(fps.toFixed(1), 20, 20);
   }
 
   me.start = function() {
@@ -54,8 +53,6 @@ var Game = function(canvasId) {
     // quick way of ending the loop.
     (function mainLoop() {
       if(!me.running) return;
-
-
 
       // schedules this fn to be called on the next desync
         // better than setInterval (as you don't know when it's called)
@@ -84,9 +81,30 @@ var Game = function(canvasId) {
 
 var game = new Game('game');
 
-var grid = new Grid(50, 50, 10, 10, 20, 20);
+var grid = new Grid(0, 0, Math.floor(600/20), Math.floor(800/20), 20, 20);
 
-grid.cells[6].isAlive = true;
+// click handlers
+game.canvas.addEventListener('click', function(e) {
+  // onClick seed the grid
+  console.log(e)
+  var gridX = Math.floor(e.offsetX / grid.width);
+  var gridY = Math.floor(e.offsetY / grid.height);
+
+  // become alive when clicked
+  grid.getCell(gridX, gridY).isAlive = true;
+});
+
+window.addEventListener('keydown', function() {
+  grid.simulationOn = !grid.simulationOn;
+})
+
+// grid.cells[6].isAlive = true;
+// grid.getCell(5,5).isAlive = true;
+// grid.getCell(5,6).isAlive = true;
+// grid.getCell(6,5).isAlive = true;
+// grid.getCell(6,6).isAlive = true;
+
+
 game.actors.push(grid);
 
 game.start();
